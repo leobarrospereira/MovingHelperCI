@@ -25,7 +25,6 @@ class TaskCellTests: XCTestCase {
                     inSection: 0)) as? TaskTableViewCell
                 
                 if let cell = testCell {
-                    let cell = TaskTableViewCell()
                     let expectation = expectationWithDescription("Task updated")
                     
                     struct TestDelegate: TaskUpdatedDelegate {

@@ -1,12 +1,4 @@
 machine:
   xcode:
     version: "6.4"
-    
-test:
-  override:
-    - xctool
-      -destination 'platform=iOS Simulator,name=iPhone 6,OS=latest'
-      -sdk iphonesimulator
-      -scheme "MovingHelper"
-      build build-tests run-tests
       

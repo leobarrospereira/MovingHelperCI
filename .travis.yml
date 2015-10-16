@@ -2,3 +2,4 @@ language: objective-c
 osx_image: xcode7 
 xcode_project: MovingHelper.xcodeproj 
 xcode_scheme: MovingHelper 
+xcode_sdk: iphonesimulator

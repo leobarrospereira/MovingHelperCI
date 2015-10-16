@@ -47,7 +47,7 @@ public class MasterViewController: UITableViewController {
       let segueIdentifier: SegueIdentifier = SegueIdentifier(rawValue: identifier)!
       switch segueIdentifier {
       case .ShowDetailVCSegue:
-        if let indexPath = self.tableView.indexPathForSelectedRow() {
+        if let indexPath = self.tableView.indexPathForSelectedRow {
           let task = taskForIndexPath(indexPath)
           (segue.destinationViewController as! DetailViewController).detailTask = task
         }
@@ -67,9 +67,9 @@ public class MasterViewController: UITableViewController {
     let index = task.dueDate.getIndex()
     let dueDateTasks = sections[index]
     
-    var tasksWithDifferentID = filter(dueDateTasks) { $0.taskID != task.taskID }
+    var tasksWithDifferentID = dueDateTasks.filter { $0.taskID != task.taskID }
     tasksWithDifferentID.append(task)
-    tasksWithDifferentID.sort({ $0.taskID > $1.taskID })
+    tasksWithDifferentID.sortInPlace({ $0.taskID > $1.taskID })
     
     sections[index] = tasksWithDifferentID
     tableView.reloadData()
@@ -97,6 +97,50 @@ public class MasterViewController: UITableViewController {
     return NSUserDefaults.standardUserDefaults()
       .valueForKey(UserDefaultKey.MovingDate.rawValue) as? NSDate
   }
+    
+    //MARK: - Table View Data Source Extension
+    private func taskForIndexPath(indexPath: NSIndexPath) -> Task {
+        let tasks = tasksForSection(indexPath.section)
+        return tasks[indexPath.row]
+    }
+    
+    private func tasksForSection(section: Int) -> [Task] {
+        let currentSection = sections[section]
+        return currentSection
+    }
+    
+    override public func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+        return sections.count
+    }
+    
+    override public func tableView(tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return 40
+    }
+    
+    override public func tableView(tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let header = tableView.dequeueReusableCellWithIdentifier(TaskSectionHeaderView.cellIdentifierFromClassName()) as! TaskSectionHeaderView
+        let dueDate = TaskDueDate.fromIndex(section)
+        
+        if let moveDate = movingDate {
+            header.configureForDueDate(dueDate, moveDate: moveDate)
+        }
+        
+        return header
+    }
+    
+    override public func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        let tasks = tasksForSection(section)
+        return tasks.count
+    }
+    
+    override public func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCellWithIdentifier(TaskTableViewCell.cellIdentifierFromClassName(), forIndexPath: indexPath) as! TaskTableViewCell
+        let task = taskForIndexPath(indexPath)
+        cell.configureForTask(task)
+        cell.delegate = self
+        
+        return cell
+    }
 }
 
 //MARK: - Task Updated Delegate Extension
@@ -121,52 +165,3 @@ extension MasterViewController: MovingDateDelegate {
     tableView.reloadData()
   }
 }
-
-//MARK: - Table View Data Source Extension
-
-extension MasterViewController : UITableViewDataSource {
-  
-  private func taskForIndexPath(indexPath: NSIndexPath) -> Task {
-    let tasks = tasksForSection(indexPath.section)
-    return tasks[indexPath.row]
-  }
-  
-  private func tasksForSection(section: Int) -> [Task] {
-    let currentSection = sections[section]
-    return currentSection
-  }
-  
-  override public func numberOfSectionsInTableView(tableView: UITableView) -> Int {
-    return sections.count
-  }
-  
-  override public func tableView(tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-    return 40
-  }
-  
-  override public func tableView(tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-    let header = tableView.dequeueReusableCellWithIdentifier(TaskSectionHeaderView.cellIdentifierFromClassName()) as! TaskSectionHeaderView
-    let dueDate = TaskDueDate.fromIndex(section)
-    
-    if let moveDate = movingDate {
-      header.configureForDueDate(dueDate, moveDate: moveDate)
-    }
-    
-    return header
-  }
-  
-  override public func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-    let tasks = tasksForSection(section)
-    return tasks.count
-  }
-  
-  override public func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-    let cell = tableView.dequeueReusableCellWithIdentifier(TaskTableViewCell.cellIdentifierFromClassName(), forIndexPath: indexPath) as! TaskTableViewCell
-    let task = taskForIndexPath(indexPath)
-    cell.configureForTask(task)
-    cell.delegate = self
-    
-    return cell
-  }
-}
-

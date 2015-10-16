@@ -24,7 +24,7 @@ public struct TaskLoader {
   
   
   /**
-  :returns: The stock moving tasks included with the app.
+  - returns: The stock moving tasks included with the app.
   */
   public static func loadStockTasks() -> [Task] {
     if let path = NSBundle.mainBundle()
@@ -41,11 +41,18 @@ public struct TaskLoader {
   
   private static func tasksFromData(data: NSData) -> [Task]? {
     let error = NSErrorPointer()
-    if let arrayOfTaskDictionaries = NSJSONSerialization.JSONObjectWithData(data, options: nil, error: error) as? [NSDictionary] {
-      return Task.tasksFromArrayOfJSONDictionaries(arrayOfTaskDictionaries)
-    } else {
-      NSLog("Error loading data: " + error.debugDescription)
-      return nil
+    do {
+        let items = try NSJSONSerialization.JSONObjectWithData(data, options: [])
+        if let arrayOfTaskDictionaries = items as? [NSDictionary] {
+            return Task.tasksFromArrayOfJSONDictionaries(arrayOfTaskDictionaries)
+        } else {
+            NSLog("Error loading data: " + error.debugDescription)
+            return nil
+        }
+    } catch let error1 as NSError {
+        NSLog("Error loading data: " + error1.debugDescription)
+        return nil
     }
   }
+    
 }

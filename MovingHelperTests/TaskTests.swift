@@ -49,7 +49,7 @@ class TaskTests: XCTestCase {
           XCTFail("JSON did not have notes when there was a passed in notes value!")
         }
       } else {
-        if let jsonNotes = taskFromJSON.notes {
+        if let _ = taskFromJSON.notes {
           XCTFail("JSON had notes when task did not!")
         }
       }
@@ -98,7 +98,7 @@ class TaskTests: XCTestCase {
       XCTFail("Due date did not serialize!")
     }
     
-    if let retrievedNotes: AnyObject = jsonDict[TaskJSONKey.Notes.rawValue] {
+    if let _ = jsonDict[TaskJSONKey.Notes.rawValue] {
       XCTFail("Unexpected value for unstored notes!")
     }
     

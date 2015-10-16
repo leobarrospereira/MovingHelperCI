@@ -2,8 +2,7 @@
 
 A sample project for a [RayWenderlich.com](http://www.raywenderlich.com) tutorial on setting up continuous integration with GitHub and Travis CI! 
 
-Setting up continuos integration with Github and Bitrise too!
-
+Setting up continuous integration with Github and Bitrise too!
 
 --
 
